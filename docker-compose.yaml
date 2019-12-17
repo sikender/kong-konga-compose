@@ -13,11 +13,6 @@ services:
       POSTGRES_DB: ${KONG_PG_DATABASE:-kong}
       POSTGRES_PASSWORD: ${KONG_PG_PASSWORD:-kong}
       POSTGRES_USER: ${KONG_PG_USER:-kong}
-    healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${KONG_PG_USER:-kong}"]
-      interval: 30s
-      timeout: 30s
-      retries: 3
     restart: on-failure
     stdin_open: true
     tty: true
@@ -28,7 +23,7 @@ services:
 
   kong-migrations:
     image: kong:latest
-    command: sh -c "(kong migrations bootstrap && sleep 30)"
+    command: kong migrations bootstrap
     depends_on:
       - kong_database
     environment:
@@ -80,11 +75,6 @@ services:
       - "8001:8001/tcp"
       - "8443:8443/tcp"
       - "8444:8444/tcp"
-    healthcheck:
-      test: ["CMD", "kong", "health"]
-      interval: 10s
-      timeout: 10s
-      retries: 10
     restart: on-failure
 
   konga-prepare:
